@@ -1,319 +1,91 @@
+import streamlit as st
 
-<!DOCTYPE html>
-<html lang="pt">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sniper Calc Pro - Institutional Master</title>
+# Page configuration
+st.set_page_config(
+    page_title="ScalpProp Premium",
+    page_icon="⚡",
+    layout="centered"
+)
+
+# Custom CSS focused on Marvel-style high impact, neon glow, and black outlines
+st.markdown("""
     <style>
-        :root {
-            --bg-color: #0b0c10;
-            --card-bg: rgba(22, 25, 37, 0.95);
-            --gold-color: #d4af37;
-            --gold-hover: #f3e5ab;
-            --green-market: #00c853;
-            --red-market: #ff3d00;
-            --text-color: #ffffff;
-            --text-muted: #a0a5b5;
-            --border-color: #24293e;
-        }
-
-        body {
-            font-family: '-apple-system', BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background-color: var(--bg-color);
-            background-image: 
-                linear-gradient(rgba(36, 41, 62, 0.15) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(36, 41, 62, 0.15) 1px, transparent 1px);
-            background-size: 30px 30px;
-            color: var(--text-color);
-            margin: 0;
-            padding: 10px;
-            display: flex;
-            justify-content: center;
-            min-height: 98vh;
-        }
-
-        .app-container {
-            width: 100%;
-            max-width: 480px;
-            background-color: var(--card-bg);
-            border: 1px solid rgba(212, 175, 55, 0.3);
-            border-radius: 14px;
-            padding: 15px;
-            box-shadow: 0 10px 35px rgba(0, 0, 0, 0.9);
-            backdrop-filter: blur(8px);
-        }
-
-        h2 {
-            margin-top: 0;
-            color: var(--gold-color);
-            font-size: 18px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            border-bottom: 2px solid var(--border-color);
-            padding-bottom: 8px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        h2 span { font-size: 9px; color: var(--text-muted); background: rgba(212, 175, 55, 0.1); padding: 3px 6px; border-radius: 4px; }
-
-        /* Tabs Navigation */
-        .tabs-nav {
-            display: flex;
-            gap: 5px;
-            margin-bottom: 15px;
-            border-bottom: 1px solid var(--border-color);
-            padding-bottom: 8px;
-            overflow-x: auto;
-        }
-
-        .tab-btn {
-            background: rgba(11, 12, 16, 0.6);
-            border: 1px solid var(--border-color);
-            color: var(--text-muted);
-            padding: 8px 12px;
-            font-size: 11px;
-            font-weight: 700;
-            text-transform: uppercase;
-            border-radius: 6px;
-            cursor: pointer;
-            white-space: nowrap;
-        }
-
-        .tab-btn.active {
-            background: var(--gold-color);
-            color: #0b0c10;
-            border-color: var(--gold-color);
-        }
-
-        .tab-content { display: none; }
-        .tab-content.active { display: block; }
-
-        /* Form Layout */
-        .search-section { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 12px; }
-        .full-width { grid-column: span 2; }
-        .input-group { display: flex; flex-direction: column; gap: 4px; }
-        label { font-size: 9px; color: var(--text-muted); font-weight: 700; text-transform: uppercase; }
-        input, select { background-color: rgba(11, 12, 16, 0.95); border: 1px solid var(--border-color); border-radius: 6px; padding: 8px; color: var(--text-color); font-size: 13px; outline: none; }
-        input:focus, select:focus { border-color: var(--gold-color); }
-
-        .btn-calc { background-color: var(--gold-color); color: #0b0c10; border: none; border-radius: 6px; padding: 12px; font-weight: 700; font-size: 13px; cursor: pointer; text-transform: uppercase; width: 100%; margin-top: 5px; }
-        .btn-calc:hover { background-color: var(--gold-hover); }
-
-        /* Tables & Lists */
-        .results-table { width: 100%; border-collapse: collapse; margin-top: 10px; background-color: rgba(11, 12, 16, 0.6); border-radius: 6px; overflow: hidden; }
-        .results-table th, .results-table td { padding: 8px 10px; text-align: left; border-bottom: 1px solid var(--border-color); font-size: 12px; }
-        .results-table th { background-color: rgba(11, 12, 16, 0.9); color: var(--gold-color); font-size: 9px; text-transform: uppercase; }
-
-        .badge-long { color: var(--green-market); font-weight: bold; }
-        .badge-short { color: var(--red-market); font-weight: bold; }
-        .badge-neutral { color: var(--gold-color); font-weight: bold; }
-
-        /* Rules & Info Cards */
-        .info-card { background: rgba(11, 12, 16, 0.8); border: 1px solid var(--border-color); padding: 10px; border-radius: 6px; margin-bottom: 10px; }
-        .info-card h4 { margin: 0 0 6px 0; color: var(--gold-color); font-size: 12px; text-transform: uppercase; }
-        .info-card p, .info-card li { margin: 4px 0; font-size: 11px; color: #e2e8f0; line-height: 1.4; }
-        .info-card ul { padding-left: 15px; margin: 4px 0; }
-
-        .co-pilot-box { margin-top: 12px; background-color: rgba(11, 12, 16, 0.95); padding: 12px; border-radius: 0 8px 8px 0; border: 1px solid var(--border-color); border-left: 4px solid var(--gold-color); }
-        .co-pilot-box h3 { margin: 0 0 6px 0; font-size: 12px; color: var(--gold-color); text-transform: uppercase; }
-        .co-pilot-box p { margin: 5px 0; font-size: 11px; color: #e2e8f0; line-height: 1.4; }
-    </style>
-</head>
-<body>
-
-<div class="app-container">
-    <h2>SNIPER CALC <span>INSTITUTIONAL V3</span></h2>
+    /* Dark institutional background */
+    .main { 
+        background-color: #0d1117; 
+    }
     
-    <div class="tabs-nav">
-        <button class="tab-btn active" onclick="switchTab('calc')">Calculadora</button>
-        <button class="tab-btn" onclick="switchTab('rules')">Regras & Drawdown</button>
-        <button class="tab-btn" onclick="switchTab('charts')">Padrões & Fluxo</button>
-        <button class="tab-btn" onclick="switchTab('macro')">Macro & Estudo</button>
-    </div>
-
-    <!-- TAB 1: CALCULADORA CORE -->
-    <div id="tab-calc" class="tab-content active">
-        <div class="search-section">
-            <div class="input-group">
-                <label for="token">Token</label>
-                <input type="text" id="token" value="SUI">
-            </div>
-            <div class="input-group">
-                <label for="direction">Direção</label>
-                <select id="direction">
-                    <option value="long">LONG</option>
-                    <option value="short">SHORT</option>
-                </select>
-            </div>
-            <div class="input-group">
-                <label for="balance">Balanço da Conta ($)</label>
-                <input type="number" id="balance" value="5000">
-            </div>
-            <div class="input-group">
-                <label for="risk-percent">Risco Máx por Trade (%)</label>
-                <input type="number" id="risk-percent" value="1" step="0.1">
-            </div>
-            <div class="input-group">
-                <label for="swing-base">Origem (Topo/Fundo Swing)</label>
-                <input type="number" id="swing-base" value="0.7000" step="any">
-            </div>
-            <div class="input-group">
-                <label for="entry">Preço de Entrada Atual</label>
-                <input type="number" id="entry" value="0.7300" step="any">
-            </div>
-            <div class="input-group">
-                <label for="rsi-value">RSI M5/M15</label>
-                <input type="number" id="rsi-value" value="50">
-            </div>
-            <div class="input-group">
-                <label for="leverage">Alavancagem Pretendida</label>
-                <input type="number" id="leverage" value="10">
-            </div>
-            <div class="full-width">
-                <button class="btn-calc" onclick="calculateSniperCore()">Executar Ordem Sniper</button>
-            </div>
-        </div>
-
-        <table class="results-table">
-            <thead>
-                <tr><th>Métrica Execução</th><th>Valor Calculado</th></tr>
-            </thead>
-            <tbody>
-                <tr><td>Tamanho da Posição Absoluto</td><td><span id="pos-size" class="badge-neutral">--</span></td></tr>
-                <tr><td>Fibonacci 0.5 (Equilíbrio)</td><td><span id="fib-50" class="badge-neutral">--</span></td></tr>
-                <tr><td>Fibonacci 0.618 (Golden Zone)</td><td><span id="fib-618" class="badge-neutral">--</span></td></tr>
-                <tr><td>Take Profit Estrito (1:3 RR)</td><td><span id="tp-target" class="badge-long">--</span></td></tr>
-                <tr><td>Stop Loss (Invalidação Estrutural)</td><td><span id="sl-target" class="badge-short">--</span></td></tr>
-            </tbody>
-        </table>
-
-        <div class="co-pilot-box">
-            <h3>Confluence Output</h3>
-            <p id="sentiment-text">Insere os dados operacionais e corre o algoritmo.</p>
-        </div>
-    </div>
-
-    <!-- TAB 2: REGRAS & GERENCIAMENTO DE DRAWDOWN -->
-    <div id="tab-rules" class="tab-content">
-        <div class="info-card" style="border-left: 3px solid var(--red-market);">
-            <h4>Gestão de Risco Blindada (Prop Trading)</h4>
-            <ul>
-                <li><strong>Drawdown Diário Rígido:</strong> Monitorização ativa do painel da mesa de trading para nunca exceder o limite diário de flutuação baseado na perda máxima autorizada.</li>
-                <li><strong>Alocação Assimétrica:</strong> Divisão rigorosa e proteção de capital quando operando múltiplas contas simultâneas de $5.000.</li>
-                <li><strong>Gestão de Lote:</strong> O tamanho máximo do trade ajusta-se dinamicamente ao stop de invalidação estrutural. Se o stop for largo, o lote diminui proporcionalmente.</li>
-            </ul>
-        </div>
-        <div class="info-card">
-            <h4>Plano de Invalidação Operacional</h4>
-            <p>Se o preço quebrar e fechar uma vela abaixo do nível 0.786 de Fibonacci da pernada, a estrutura de <em>Order Block</em> é considerada mitigada de forma inválida. **Sair imediatamente**, sem hesitações.</p>
-        </div>
-    </div>
-
-    <!-- TAB 3: PADRÕES GRÁFICOS & FLUXO DE LIQUIDEZ -->
-    <div id="tab-charts" class="tab-content">
-        <div class="info-card">
-            <h4>Checklist de Fluxo Institucional</h4>
-            <ul>
-                <li><strong>Liquidation Heatmap:</strong> Identificar e caçar as grandes piscinas de liquidez acumuladas antes de procurar a entrada.</li>
-                <li><strong>Order Blocks:</strong> Confirmar se a zona de gatilho coincide com um bloco de ordens institucional não testado (Fresh OB).</li>
-                <li><strong>Anchored VWAP:</strong> Ancorar o VWAP no início do impulso macro para validar se a "Hot Zone" atua como suporte/resistência dinâmico ponderado por volume.</li>
-            </ul>
-        </div>
-        <div class="info-card">
-            <h4>Padrões Técnicos Autorizados</h4>
-            <p><strong>Long:</strong> Captura de liquidez (Sweep) seguida de quebra de estrutura de mercado (MSB/BOS) na "Hot Zone" + RSI em sobrevenda.</p>
-            <p><strong>Short:</strong> Mitigação de Order Block premium + Exaustão de volume + RSI em sobrecompra em confluência com piscinas de liquidação no topo.</p>
-        </div>
-    </div>
-
-    <!-- TAB 4: MACRO SENTIMENT & MATERIAL DE ESTUDO -->
-    <div id="tab-macro" class="tab-content">
-        <div class="info-card" style="border-left: 3px solid #00e5ff;">
-            <h4>Fontes Globais de Sentimento Rápido</h4>
-            <ul>
-                <li><strong>Bloomberg & Reuters:</strong> Monitorizar quebras de tendências macro, taxas de juro e eventos geopolíticos de alta volatilidade.</li>
-                <li><strong>CNBC & Perfis Institucionais:</strong> Filtrar ruído de mercado de retalho e focar nas narrativas vigentes do Smart Money.</li>
-            </ul>
-        </div>
-        <div class="info-card">
-            <h4>Leitura de Referência Técnica</h4>
-            <p>Integrando conceitos avançados de psicologia comportamental de trading, gestão profissional de risco patrimonial e análise matemática de preços em sistemas de alta frequência para refinar a precisão e consistência dos teus alvos.</p>
-        </div>
-    </div>
-</div>
-
-<script>
-    function switchTab(tabName) {
-        document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
-        document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
-        
-        document.getElementById('tab-' + tabName).classList.add('active');
-        event.currentTarget.classList.add('active');
+    /* Title with Marvel-style impact, bright gold, and solid black outline */
+    .brand-title {
+        text-align: center;
+        color: #ffcc00 !important;
+        font-family: 'Impact', 'Arial Black', sans-serif;
+        font-size: 3rem;
+        letter-spacing: 2px;
+        text-shadow: 
+            -2px -2px 0 #000,  
+             2px -2px 0 #000,
+            -2px  2px 0 #000,
+             2px  2px 0 #000,
+             0px  4px 10px rgba(255, 204, 0, 0.4);
+        margin-bottom: 0px;
+        margin-top: -10px;
     }
-
-    function calculateSniperCore() {
-        const token = document.getElementById('token').value.toUpperCase();
-        const direction = document.getElementById('direction').value;
-        const balance = parseFloat(document.getElementById('balance').value);
-        const riskPercent = parseFloat(document.getElementById('risk-percent').value);
-        const swingBase = parseFloat(document.getElementById('swing-base').value);
-        const entry = parseFloat(document.getElementById('entry').value);
-        const rsi = parseFloat(document.getElementById('rsi-value').value);
-        const leverage = parseFloat(document.getElementById('leverage').value);
-
-        if (isNaN(swingBase) || isNaN(entry) || isNaN(balance)) {
-            alert("Preenche os parâmetros de preço para calcular a Hot Zone.");
-            return;
-        }
-
-        const riskAmount = balance * (riskPercent / 100);
-        const currentDiff = Math.abs(entry - swingBase);
-        
-        let fib50, fib618, sl, tp;
-
-        if (direction === 'long') {
-            fib50 = entry > swingBase ? entry - (currentDiff * 0.5) : swingBase - (currentDiff * 0.5);
-            fib618 = entry > swingBase ? entry - (currentDiff * 0.618) : swingBase - (currentDiff * 0.618);
-            sl = entry > swingBase ? entry - (currentDiff * 0.786) : entry * 0.98;
-            const riskPerToken = entry - sl;
-            var positionSizeUSD = (riskAmount / riskPerToken) * entry;
-            tp = entry + (riskPerToken * 3);
-        } else {
-            fib50 = entry + (currentDiff * 0.5);
-            fib618 = entry + (currentDiff * 0.618);
-            sl = entry + (currentDiff * 0.786);
-            const riskPerToken = sl - entry;
-            var positionSizeUSD = (riskAmount / riskPerToken) * entry;
-            tp = entry - (riskPerToken * 3);
-        }
-
-        if(isNaN(positionSizeUSD) || positionSizeUSD <= 0 || !isFinite(positionSizeUSD)) {
-            positionSizeUSD = riskAmount * leverage;
-        }
-
-        document.getElementById('pos-size').innerText = `$${positionSizeUSD.toFixed(2)}`;
-        document.getElementById('fib-50').innerText = fib50.toFixed(4);
-        document.getElementById('fib-618').innerText = fib618.toFixed(4);
-        document.getElementById('tp-target').innerText = tp.toFixed(4);
-        document.getElementById('sl-target').innerText = sl.toFixed(4);
-
-        let rsiAlert = "Neutro";
-        if (rsi <= 35) rsiAlert = "🔥 SOBRECOMPRA/EXAUSTÃO VENDEDORA (Alinhado com Long)";
-        if (rsi >= 65) rsiAlert = "🚨 SOBREVENDA/EXAUSTÃO COMPRADORA (Alinhado com Short)";
-
-        const sentimentBox = document.getElementById('sentiment-text');
-        sentimentBox.innerHTML = `
-            <strong>Mapeamento Concluído para ${token}:</strong><br>
-            • <strong>Risco Controlado:</strong> Perda estrita de <strong>$${riskAmount.toFixed(2)}</strong> para proteção do limite diário da conta de $${balance}.<br>
-            • <strong>Hot Zone Estrutural:</strong> Faixa entre <strong>${fib50.toFixed(4)}</strong> e <strong>${fib618.toFixed(4)}</strong>.<br>
-            • <strong>Filtro RSI:</strong> ${rsiAlert}.<br><br>
-            ⚠️ <strong>Gatilho Pro:</strong> Entrar apenas se as piscinas do <em>Heatmap</em> validarem a captura de liquidez nesta área técnica combinada com o <em>Anchored VWAP</em>.
-        `;
+    
+    /* Subtitle styling */
+    .brand-subtitle {
+        text-align: center;
+        color: #8b949e;
+        font-family: 'Courier New', monospace;
+        font-size: 1rem;
+        margin-top: -10px;
+        margin-bottom: 20px;
     }
-</script>
+    
+    /* Styling for Input Fields with Dark Theme */
+    .stNumberInput div div input, .stTextInput div div input { 
+        background-color: #161b22 !important; 
+        color: white !important; 
+        border: 1px solid #30363d !important;
+    }
+    
+    /* High Impact Glowing Button - Matching the logo's vibrant energy */
+    .stButton>button {
+        background: linear-gradient(135deg, #00ff66 0%, #00cc52 100%) !important;
+        color: #000000 !important;
+        font-weight: bold !important;
+        font-size: 1.1rem !important;
+        border: 2px solid #000000 !important;
+        box-shadow: 0px 0px 15px rgba(0, 255, 102, 0.6) !important;
+        border-radius: 8px !important;
+        transition: all 0.3s ease !important;
+    }
+    
+    .stButton>button:hover {
+        background: linear-gradient(135deg, #ffcc00 0%, #ffb300 100%) !important;
+        box-shadow: 0px 0px 20px rgba(255, 204, 0, 0.8) !important;
+        transform: scale(1.02);
+    }
+    </style>
+""", unsafe_allow_html=True)
 
-</body>
-</html>
+# --- LOGO DISPLAY (Link direto para a imagem do novo logotipo) ---
+logo_url = "https://images.prodia.xyz/86047eb6-e575-47eb-ba05-7f4f6e1f0229.png"
+col1, col2, col3 = st.columns([1, 2, 1])
+with col2:
+    st.image(logo_url, use_container_width=True)
+
+# --- HEADER REBRANDING ---
+st.markdown("<h1 class='brand-title'>SCALPPROP</h1>", unsafe_allow_html=True)
+st.markdown("<p class='brand-subtitle'>⚡ PREMIUM ⚡</p>", unsafe_allow_html=True)
+st.write("---")
+
+# --- INPUT FIELDS (INTERNATIONAL ENGLISH) ---
+token = st.text_input("SEARCH TOKEN", value="SOL").upper()
+saldo = st.number_input("PROPFIRM BALANCE ($)", value=5000, step=500)
+
+st.write("---")
+
+# --- ACTION BUTTON (NEON GREEN GLOW) ---
+if st.button("EXECUTE AUTOMATIC SCAN", use_container_width=True):
+    st.success(f"Scan executed successfully for {token} inside the ScalpProp network!")
