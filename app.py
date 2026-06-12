@@ -19,47 +19,32 @@ def get_price(token):
     except:
         return None
 
-# Interface Visual (HTML/CSS)
-html_code = """
-<!DOCTYPE html>
-<html lang="pt">
-<head>
-    <style>
-        :root { --bg-color: #0b0c10; --card-bg: rgba(22, 25, 37, 0.9); --gold-color: #d4af37; --text-color: #ffffff; }
-        body { font-family: sans-serif; background-color: var(--bg-color); color: var(--text-color); margin: 0; padding: 10px; }
-        .app-container { background-color: var(--card-bg); border: 1px solid var(--gold-color); border-radius: 14px; padding: 20px; }
-        h2 { color: var(--gold-color); text-transform: uppercase; border-bottom: 1px solid #333; margin: 0; }
-    </style>
-</head>
-<body>
-    <div class="app-container">
-        <h2>SCALP PROP</h2>
-    </div>
-</body>
-</html>
-"""
+# Cabeçalho Estilizado
+components.html("""
+<div style="background-color: rgba(22, 25, 37, 0.9); border: 1px solid #d4af37; border-radius: 14px; padding: 15px; text-align: center;">
+    <h2 style="color: #d4af37; text-transform: uppercase; margin: 0;">Scalp Prop</h2>
+</div>
+""", height=80)
 
-components.html(html_code, height=100)
-
-# Lógica de Interação no Streamlit
-st.subheader("Configuração da Operação")
-token = st.text_input("Procurar Token (ex: BTC, SOL, ETH)", "BTC").upper()
+# Lógica de Interação
+st.write("---")
+token = st.text_input("Procurar Token (ex: BTC, SOL)", "BTC").upper()
 banca = st.number_input("Saldo Bitfunded ($)", value=5000.0)
-entrada = st.number_input("Preço de Entrada ($)", value=0.0, step=0.01)
-sl = st.number_input("Preço de Stop Loss ($)", value=0.0, step=0.01)
+col1, col2 = st.columns(2)
+with col1:
+    entrada = st.number_input("Preço de Entrada ($)", value=0.0, step=0.01)
+with col2:
+    sl = st.number_input("Preço de Stop ($)", value=0.0, step=0.01)
 
 if st.button("Executar Scan Automático"):
     preco_atual = get_price(token)
-    
     if preco_atual:
-        st.success(f"✅ Preço de {token} encontrado: ${preco_atual}")
-        
-        # Cálculo básico de Risco
+        st.success(f"✅ Preço Atual: ${preco_atual}")
         dist = abs(entrada - sl)
         risco = banca * 0.0025
         lote = risco / dist
         
-        st.write(f"**Lote sugerido:** {lote:.4f} {token}")
+        st.metric(label="Lote Sugerido", value=f"{lote:.4f} {token}")
         st.write(f"**Alvo 1 (1:2):** {(entrada + (dist*2)) if entrada > sl else (entrada - (dist*2)):.2f}")
     else:
-        st.error(f"❌ Não foi possível rastrear o par {token}USDT. Verifica se o nome está correto.")
+        st.error(f"❌ Não foi possível encontrar {token}USDT.")
