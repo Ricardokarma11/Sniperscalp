@@ -1,50 +1,49 @@
 import streamlit as st
-import streamlit.components.v1 as components
-from tradingview_ta import TA_Handler, Interval, Exchange
 
 # Configuração da página
-st.set_page_config(page_title="Scalp Prop - Premium", layout="centered")
+st.set_page_config(page_title="ScalpProp - Mobile V1", layout="centered")
 
-# Função para buscar preço no TradingView
-def get_price(token):
-    try:
-        handler = TA_Handler(
-            symbol=f"{token}USDT",
-            screener="crypto",
-            exchange="BINANCE",
-            interval=Interval.INTERVAL_1_MINUTE
-        )
-        analysis = handler.get_analysis()
-        return analysis.indicators["close"]
-    except:
-        return None
+# Estilização CSS Original
+st.markdown("""
+<style>
+    :root {
+        --bg-color: #0b0c10;
+        --card-bg: rgba(22, 25, 37, 0.9);
+        --gold-color: #d4af37;
+        --text-color: #ffffff;
+    }
+    .app-container {
+        background-color: var(--card-bg);
+        border: 1px solid var(--gold-color);
+        border-radius: 14px;
+        padding: 20px;
+    }
+    h2 { color: var(--gold-color); text-transform: uppercase; }
+</style>
+""", unsafe_allow_html=True)
 
-# Cabeçalho Estilizado
-components.html("""
-<div style="background-color: rgba(22, 25, 37, 0.9); border: 1px solid #d4af37; border-radius: 14px; padding: 15px; text-align: center;">
-    <h2 style="color: #d4af37; text-transform: uppercase; margin: 0;">Scalp Prop</h2>
-</div>
-""", height=80)
+# Layout Original
+st.markdown('<div class="app-container">', unsafe_allow_html=True)
+st.markdown("<h2>ScalpProp <span>MOBILE V1</span></h2>", unsafe_allow_html=True)
 
-# Lógica de Interação
-st.write("---")
-token = st.text_input("Procurar Token (ex: BTC, SOL)", "BTC").upper()
+token = st.text_input("Token", "SOL")
+tipo_trade = st.selectbox("Operação", ["SCALP", "LIMIT"])
 banca = st.number_input("Saldo Bitfunded ($)", value=5000.0)
-col1, col2 = st.columns(2)
-with col1:
-    entrada = st.number_input("Preço de Entrada ($)", value=0.0, step=0.01)
-with col2:
-    sl = st.number_input("Preço de Stop ($)", value=0.0, step=0.01)
+entrada = st.number_input("Preço Entrada ($)", value=140.00, step=0.01)
+sl = st.number_input("Preço Stop Loss ($)", value=138.50, step=0.01)
 
-if st.button("Executar Scan Automático"):
-    preco_atual = get_price(token)
-    if preco_atual:
-        st.success(f"✅ Preço Atual: ${preco_atual}")
-        dist = abs(entrada - sl)
-        risco = banca * 0.0025
-        lote = risco / dist
-        
-        st.metric(label="Lote Sugerido", value=f"{lote:.4f} {token}")
-        st.write(f"**Alvo 1 (1:2):** {(entrada + (dist*2)) if entrada > sl else (entrada - (dist*2)):.2f}")
-    else:
-        st.error(f"❌ Não foi possível encontrar {token}USDT.")
+if st.button("Calcular Matriz"):
+    # Lógica de cálculo original
+    risco_percentual = 0.0025
+    capital_em_risco = banca * risco_percentual
+    dist_absoluta = abs(entrada - sl)
+    direcao = "LONG" if entrada > sl else "SHORT"
+    lote_moedas = capital_em_risco / dist_absoluta
+    
+    st.write(f"**Modo:** {direcao}")
+    st.write(f"**Lote sugerido:** {lote_moedas:.4f} {token}")
+    st.write(f"**TP1 (1:2):** {(entrada + (dist_absoluta*2)) if direcao == 'LONG' else (entrada - (dist_absoluta*2)):.4f}")
+    st.write(f"**TP2 (1:4):** {(entrada + (dist_absoluta*4)) if direcao == 'LONG' else (entrada - (dist_absoluta*4)):.4f}")
+    st.write(f"**TP3 (1:6):** {(entrada + (dist_absoluta*6)) if direcao == 'LONG' else (entrada - (dist_absoluta*6)):.4f}")
+
+st.markdown('</div>', unsafe_allow_html=True)
