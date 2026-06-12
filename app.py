@@ -2,7 +2,7 @@ import streamlit as st
 import requests
 
 # 1. Configuração da Página e Título do Navegador
-st.markdown("<h1 style='text-align: center;'>🎯 SCALPPROP • PREMIUM</h1>", unsafe_allow_html=True)
+st.markdown("<h1 style='text-align: center;'>,,📈 SCALPPROP • PREMIUM</h1>", unsafe_allow_html=True)
 
 # 2. Design Visual Avançado (CSS) - Fundo de Velas e Estilo Dourado
 st.markdown("""
@@ -71,7 +71,6 @@ def obter_preco_coinbase(token):
     return None
 
 # 3. Estrutura da Interface Visual
-st.markdown("<h1>🎯 Sniper Calc &bull; Premium</h1>", unsafe_allow_html=True)
 
 with st.container():
     col1, col2 = st.columns(2)
