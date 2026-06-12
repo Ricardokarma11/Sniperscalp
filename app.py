@@ -2,7 +2,7 @@ import streamlit as st
 import requests
 
 # 1. Configuração da Página e Título do Navegador
-st.set_page_config(page_title="Sniper Calc - Premium", page_icon="🎯", layout="centered")
+st.markdown("<h1 style='text-align: center;'>🎯 SCALPPROP • PREMIUM</h1>", unsafe_allow_html=True)
 
 # 2. Design Visual Avançado (CSS) - Fundo de Velas e Estilo Dourado
 st.markdown("""
