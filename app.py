@@ -4,7 +4,7 @@ import os
 # Page configuration
 st.set_page_config(page_title="ScalpProp Premium", page_icon="⚡", layout="centered")
 
-# CSS para o estilo Marvel/Neon
+# CSS para estilo Premium/Marvel
 st.markdown("""
     <style>
     .main { background-color: #0d1117; }
@@ -25,7 +25,7 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-# LOGO LOCAL - Vai procurar o ficheiro logo.png no teu GitHub
+# LOGO: Apenas tenta mostrar se o ficheiro existir, caso contrário não faz nada
 if os.path.exists("logo.png"):
     col1, col2, col3 = st.columns([1, 2, 1])
     with col2:
@@ -35,6 +35,7 @@ st.markdown("<h1 class='brand-title'>SCALPPROP</h1>", unsafe_allow_html=True)
 st.markdown("<p class='brand-subtitle'>⚡ PREMIUM ⚡</p>", unsafe_allow_html=True)
 st.write("---")
 
+# Inputs
 token = st.text_input("SEARCH TOKEN", value="SOL").upper()
 saldo = st.number_input("PROPFIRM BALANCE ($)", value=5000, step=500)
 
