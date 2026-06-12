@@ -30,3 +30,4 @@ st.write("---")
 # Action Button
 if st.button("EXECUTE AUTOMATIC SCAN", use_container_width=True):
     st.success(f"Scan executed successfully for {token}!")
+    
