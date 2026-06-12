@@ -1,0 +1,2 @@
+# Sniperscalp
+Trading propfirms settings 
