@@ -4,10 +4,9 @@ import requests
 # 1. Configuração da Página e Título do Navegador
 st.set_page_config(page_title="Sniper Calc - Premium", page_icon="🎯", layout="centered")
 
-# 2. Design Visual Avançado (CSS) - Fundo de Velas, Cores Pretas, Douradas, Verdes e Vermelhas
+# 2. Design Visual Avançado (CSS) - Fundo de Velas e Estilo Dourado
 st.markdown("""
     <style>
-    /* Estilização do fundo global da App */
     .stApp {
         background-color: #0b0c10;
         background-image: 
@@ -21,13 +20,7 @@ st.markdown("""
         background-position: 0 0, 0 0, 8% 20%, 9.1% 10%, 90% 65%, 91.2% 55%;
         background-repeat: repeat, repeat, no-repeat, no-repeat, no-repeat, no-repeat;
     }
-    
-    /* Contentores dos blocos (Cards) */
-    .block-container {
-        padding-top: 2rem;
-        max-width: 600px;
-    }
-    
+    .block-container { padding-top: 2rem; max-width: 600px; }
     div[data-testid="stVerticalBlock"] > div {
         background-color: rgba(22, 25, 37, 0.85);
         border: 1px solid rgba(212, 175, 55, 0.25);
@@ -36,8 +29,6 @@ st.markdown("""
         box-shadow: 0 12px 40px rgba(0,0,0,0.7);
         backdrop-filter: blur(8px);
     }
-    
-    /* Textos, Títulos e Labels */
     h1 {
         color: #d4af37 !important;
         text-transform: uppercase;
@@ -48,111 +39,40 @@ st.markdown("""
         padding-bottom: 12px;
         margin-bottom: 20px !important;
     }
-    
-    label {
-        color: #a0a5b5 !important;
-        font-weight: 700 !important;
-        text-transform: uppercase !important;
-        font-size: 11px !important;
-        letter-spacing: 0.5px;
-    }
-    
-    /* Inputs de texto e números */
-    input {
-        background-color: rgba(11, 12, 16, 0.95) !important;
-        color: white !important;
-        border: 1px solid #24293e !important;
-        border-radius: 8px !important;
-    }
-    
-    /* Botão de Calcular */
+    label { color: #a0a5b5 !important; font-weight: 700 !important; text-transform: uppercase !important; font-size: 11px !important; }
+    input { background-color: rgba(11, 12, 16, 0.95) !important; color: white !important; border: 1px solid #24293e !important; border-radius: 8px !important; }
     .stButton>button {
-        background-color: #d4af37 !important;
-        color: #0b0c10 !important;
-        font-weight: 700 !important;
-        text-transform: uppercase !important;
-        width: 100%;
-        border-radius: 8px !important;
-        border: none !important;
-        padding: 10px !important;
-        transition: all 0.2s;
+        background-color: #d4af37 !important; color: #0b0c10 !important; font-weight: 700 !important; text-transform: uppercase !important;
+        width: 100%; border-radius: 8px !important; border: none !important; padding: 10px !important;
     }
-    .stButton>button:hover {
-        background-color: #f3e5ab !important;
-        transform: translateY(-1px);
-    }
-    
-    /* Tabelas Profissionais e Badges */
-    .trade-table {
-        width: 100%;
-        border-collapse: collapse;
-        margin-top: 20px;
-        background-color: rgba(11, 12, 16, 0.6);
-        border-radius: 8px;
-        overflow: hidden;
-    }
-    .trade-table th, .trade-table td {
-        padding: 12px;
-        text-align: left;
-        border-bottom: 1px solid #24293e;
-        font-size: 14px;
-    }
-    .trade-table th {
-        background-color: rgba(11, 12, 16, 0.9);
-        color: #d4af37;
-        font-size: 11px;
-        text-transform: uppercase;
-    }
-    .badge-long {
-        background-color: rgba(0, 200, 83, 0.15);
-        color: #00c853;
-        padding: 4px 8px;
-        border-radius: 4px;
-        font-weight: bold;
-    }
-    .tp-row {
-        background-color: rgba(0, 200, 83, 0.06);
-    }
-    
-    /* Caixa de Gestão Ativa */
+    .trade-table { width: 100%; border-collapse: collapse; margin-top: 20px; background-color: rgba(11, 12, 16, 0.6); border-radius: 8px; overflow: hidden; }
+    .trade-table th, .trade-table td { padding: 12px; text-align: left; border-bottom: 1px solid #24293e; font-size: 14px; }
+    .trade-table th { background-color: rgba(11, 12, 16, 0.9); color: #d4af37; font-size: 11px; text-transform: uppercase; }
+    .badge-long { background-color: rgba(0, 200, 83, 0.15); color: #00c853; padding: 4px 8px; border-radius: 4px; font-weight: bold; }
+    .tp-row { background-color: rgba(0, 200, 83, 0.06); }
     .copilot-box {
-        margin-top: 20px;
-        background-color: rgba(11, 12, 16, 0.9);
-        border-left: 4px solid #d4af37;
-        padding: 15px;
-        border-radius: 0 10px 10px 0;
-        border-top: 1px solid #24293e;
-        border-right: 1px solid #24293e;
-        border-bottom: 1px solid #24293e;
+        margin-top: 20px; background-color: rgba(11, 12, 16, 0.9); border-left: 4px solid #d4af37; padding: 15px; border-radius: 0 10px 10px 0;
+        border-top: 1px solid #24293e; border-right: 1px solid #24293e; border-bottom: 1px solid #24293e;
     }
-    .copilot-box h3 {
-        margin: 0 0 8px 0;
-        font-size: 13px;
-        color: #d4af37;
-        text-transform: uppercase;
-    }
-    .copilot-box p {
-        margin: 5px 0;
-        font-size: 13px;
-        color: #e2e8f0;
-        line-height: 1.4;
-    }
+    .copilot-box h3 { margin: 0 0 8px 0; font-size: 13px; color: #d4af37; text-transform: uppercase; }
+    .copilot-box p { margin: 5px 0; font-size: 13px; color: #e2e8f0; line-height: 1.4; }
     </style>
 """, unsafe_allow_html=True)
 
-def obter_preco_binance(token):
-    url = f"https://api.binance.com/api/v3/ticker/price?symbol={token}USDT"
+def obter_preco_coinbase(token):
+    # API ultra-fiável da Coinbase (Não bloqueia servidores cloud)
+    url = f"https://api.coinbase.com/v2/prices/{token}-USD/spot"
     try:
-        res = requests.get(url, timeout=3)
+        res = requests.get(url, timeout=5)
         if res.status_code == 200:
-            return float(res.json()['price'])
+            return float(res.json()['data']['amount'])
     except:
         return None
+    return None
 
 # 3. Estrutura da Interface Visual
 st.markdown("<h1>🎯 Sniper Calc &bull; Premium</h1>", unsafe_allow_html=True)
 
-# Container Único para Inputs
 with st.container():
     col1, col2 = st.columns(2)
     with col1:
@@ -162,12 +82,11 @@ with st.container():
         
     calcular = st.button("Executar Scan Automático")
 
-# 4. Lógica e Renderização da Resposta Visual
+# 4. Lógica e Renderização do Setup
 if calcular and token:
-    preco_mercado = obter_preco_binance(token)
+    preco_mercado = obter_preco_coinbase(token)
     
     if preco_mercado:
-        # Fórmulas do Top Setup
         percentual_sl = 0.015  # SL Automático de 1.5%
         preco_entrada = preco_mercado
         preco_sl = preco_entrada * (1 - percentual_sl)
@@ -184,7 +103,6 @@ if calcular and token:
         tp3 = preco_entrada + (dist_absoluta * 6)
         gatilho_piramide = preco_entrada + (dist_absoluta * 1)
         
-        # Desenho da Tabela Executiva em HTML Nativo com Estilos Premium
         st.markdown(f"""
             <table class="trade-table">
                 <thead>
@@ -213,7 +131,7 @@ if calcular and token:
                     <tr style="color: #00c853; font-weight: bold;">
                         <td><strong>LOTE SUGERIDO</strong></td>
                         <td style="font-size: 16px;">{lote_moedas:.4f} {token}</td>
-                        <td>Noional: ~${lote_usd:.2f}</td>
+                        <td>Notional: ~${lote_usd:.2f}</td>
                     </tr>
                     <tr class="tp-row">
                         <td><strong>Take Profit 1 (1:2 RR)</strong></td>
@@ -235,9 +153,9 @@ if calcular and token:
             
             <div class="copilot-box">
                 <h3>🛡️ Co-Piloto de Gestão Ativa</h3>
-                <p><strong>⚠️ Tempo (Bob Volman):</strong> Sem reação forte a favor em até 4 velas? Faça o fecho manual imediato de <strong>{lote_moedas * 0.5:.4f} {token}</strong> (cortar metade do risco a mercado).</p>
-                <p><strong>🚀 Pirâmide Micro:</strong> Caso o preço rompa com volume a barreira dos <strong>${gatilho_piramide:.4f}</strong>, adicione <strong>+{lote_moedas * 0.2:.4f} {token}</strong> (+20%) ao trade com o risco do lote inicial já defendido.</p>
+                <p><strong>⚠️ Tempo (Bob Volman):</strong> Sem reação forte a favor em até 4 velas? Faça o fecho manual imediato de <strong>{lote_moedas * 0.5:.4f} {token}</strong>.</p>
+                <p><strong>🚀 Pirâmide Micro:</strong> Caso o preço rompa com volume a barreira dos <strong>${gatilho_piramide:.4f}</strong>, adicione <strong>+{lote_moedas * 0.2:.4f} {token}</strong> (+20%).</p>
             </div>
         """, unsafe_allow_html=True)
     else:
-        st.error(f"Não foi possível rastrear o par {token}USDT. Verifica se o nome está correto.")
+        st.error(f"Não foi possível obter o preço para o token {token}. Confirma se o símbolo está correto (Ex: BTC, ETH, SOL).")
