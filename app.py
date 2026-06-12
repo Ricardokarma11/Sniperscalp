@@ -2,7 +2,15 @@ import streamlit as st
 import requests
 
 # 1. Configuração da Página e Título do Navegador
-st.set_page_config(page_title="ScalpProp - Premium", page_icon="🎯", layout="centered")
+st.set_page_config# Forçar os metadados para as redes sociais
+st.markdown("""
+    <head>
+        <meta property="og:title" content="ScalpProp Premium" />
+        <meta property="og:description" content="Propfirm challenge calculator" />
+        <meta property="og:type" content="website" />
+    </head>
+""", unsafe_allow_html=True)
+(page_title="ScalpProp - Premium", page_icon="🎯", layout="centered")
 
 # 2. Design Visual Avançado (CSS) - Fundo de Velas e Estilo Dourado
 st.markdown("""
