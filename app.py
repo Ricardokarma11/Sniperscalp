@@ -1,98 +1,304 @@
-import streamlit as st
-import pandas as pd
-
-# Configuração da página para ambiente Escuro/Premium Institutional
-st.set_page_config(
-    page_title="ScalpProp Pro",
-    page_icon="⚡",
-    layout="centered"
-)
-
-# Estilo CSS customizado para manter o visual Dark/Gold Premium
-st.markdown("""
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sniper Calc - Mobile Premium</title>
     <style>
-    .main { background-color: #0d1117; }
-    h1, h2, h3 { color: #ffd700 !important; font-family: 'Courier New', monospace; }
-    .stNumberInput div div input { background-color: #161b22 !important; color: white !important; }
-    .stTextInput div div input { background-color: #161b22 !important; color: white !important; }
-    .reportview-container .main .block-container { max-width: 500px; }
-    .pnl-box { padding: 15px; background-color: #1f2937; border-radius: 8px; border-left: 5px solid #ffd700; margin-bottom: 15px; }
+        :root {
+            --bg-color: #0b0c10;
+            --card-bg: rgba(22, 25, 37, 0.9);
+            --gold-color: #d4af37;
+            --gold-hover: #f3e5ab;
+            --green-market: #00c853;
+            --red-market: #ff3d00;
+            --text-color: #ffffff;
+            --text-muted: #a0a5b5;
+            --border-color: #24293e;
+        }
+
+        body {
+            font-family: '-apple-system', BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            background-image: 
+                linear-gradient(rgba(36, 41, 62, 0.15) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(36, 41, 62, 0.15) 1px, transparent 1px),
+                linear-gradient(to bottom, var(--green-market) 0%, var(--green-market) 100%),
+                linear-gradient(to bottom, var(--green-market) 0%, var(--green-market) 100%),
+                linear-gradient(to bottom, var(--red-market) 0%, var(--red-market) 100%),
+                linear-gradient(to bottom, var(--red-market) 0%, var(--red-market) 100%);
+            background-size: 30px 30px, 30px 30px, 14px 50px, 2px 100px, 18px 70px, 2px 130px;
+            background-position: 0 0, 0 0, 8% 25%, 9.1% 15%, 88% 70%, 89.2% 65%;
+            background-repeat: repeat, repeat, no-repeat, no-repeat, no-repeat, no-repeat;
+            color: var(--text-color);
+            margin: 0;
+            padding: 15px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 95vh;
+        }
+
+        .app-container {
+            width: 100%;
+            max-width: 480px;
+            background-color: var(--card-bg);
+            border: 1px solid rgba(212, 175, 55, 0.25);
+            border-radius: 14px;
+            padding: 20px;
+            box-shadow: 0 10px 35px rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(6px);
+        }
+
+        h2 {
+            margin-top: 0;
+            color: var(--gold-color);
+            font-size: 20px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        h2 span {
+            font-size: 10px;
+            color: var(--text-muted);
+            background: rgba(212, 175, 55, 0.1);
+            padding: 3px 6px;
+            border-radius: 4px;
+        }
+
+        .search-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 15px;
+        }
+
+        .full-width {
+            grid-column: span 2;
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        label {
+            font-size: 10px;
+            color: var(--text-muted);
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        input, select {
+            background-color: rgba(11, 12, 16, 0.95);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 10px;
+            color: var(--text-color);
+            font-size: 14px;
+            outline: none;
+            -webkit-appearance: none;
+        }
+
+        input:focus, select:focus {
+            border-color: var(--gold-color);
+        }
+
+        .btn-calc {
+            background-color: var(--gold-color);
+            color: #0b0c10;
+            border: none;
+            border-radius: 6px;
+            padding: 12px;
+            font-weight: 700;
+            font-size: 14px;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-top: 5px;
+        }
+
+        .results-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+            display: none;
+            background-color: rgba(11, 12, 16, 0.6);
+            border-radius: 6px;
+            overflow: hidden;
+        }
+
+        .results-table th, .results-table td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+            font-size: 13px;
+        }
+
+        .results-table th {
+            background-color: rgba(11, 12, 16, 0.9);
+            color: var(--gold-color);
+            font-size: 10px;
+            text-transform: uppercase;
+        }
+
+        .badge-long { color: var(--green-market); font-weight: bold; }
+        .badge-short { color: var(--red-market); font-weight: bold; }
+
+        .co-pilot-box {
+            margin-top: 15px;
+            background-color: rgba(11, 12, 16, 0.9);
+            border-left: 4px solid var(--gold-color);
+            padding: 12px;
+            border-radius: 0 8px 8px 0;
+            display: none;
+            border: 1px solid var(--border-color);
+            border-left: 4px solid var(--gold-color);
+        }
+
+        .co-pilot-box h3 {
+            margin: 0 0 6px 0;
+            font-size: 12px;
+            color: var(--gold-color);
+            text-transform: uppercase;
+        }
+
+        .co-pilot-box p {
+            margin: 5px 0;
+            font-size: 12px;
+            color: #e2e8f0;
+            line-height: 1.4;
+        }
     </style>
-""", unsafe_allow_html=True)
+</head>
+<body>
 
-# --- CABEÇALHO REBRANDING ---
-st.markdown("<h1 style='text-align: center;'>⚡ SCALPPROP • PRO</h1>", unsafe_allow_html=True)
-st.markdown("<p style='text-align: center; color: #8b949e;'>Institutional Prop Risk Management</p>", unsafe_allow_html=True)
-st.write("---")
+<div class="app-container">
+    <h2>SNIPER CALC <span>MOBILE V1</span></h2>
+    
+    <div class="search-section">
+        <div class="input-group">
+            <label>Token</label>
+            <input type="text" id="token" value="SOL">
+        </div>
+        <div class="input-group">
+            <label>Operação</label>
+            <select id="tipo_trade">
+                <option value="SCALP">Scalp</option>
+                <option value="LIMIT">Limit</option>
+            </select>
+        </div>
+        <div class="input-group full-width">
+            <label>Saldo Bitfunded ($)</label>
+            <input type="number" id="banca" value="5000">
+        </div>
+        <div class="input-group">
+            <label>Preço Entrada ($)</label>
+            <input type="number" id="entrada" step="any" value="140.00">
+        </div>
+        <div class="input-group">
+            <label>Preço Stop Loss ($)</label>
+            <input type="number" id="sl" step="any" value="138.50">
+        </div>
+        <button class="btn-calc full-width" onclick="calcularSetup()">Calcular Matriz</button>
+    </div>
 
-# --- CONFIGURAÇÕES DE BASE ---
-st.subheader("🎛️ Configuração de Conta")
-col1, col2 = st.columns(2)
+    <table class="results-table" id="tabela_resultados">
+        <thead>
+            <tr>
+                <th>Parâmetro</th>
+                <th>Preço</th>
+                <th>Ação / Lote</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><strong>Modo</strong></td>
+                <td id="res_direcao">-</td>
+                <td id="res_risco_usd">-</td>
+            </tr>
+            <tr>
+                <td><strong>Lote</strong></td>
+                <td style="color: var(--green-market); font-weight: bold;" id="res_lote_moedas">-</td>
+                <td id="res_lote_usd">-</td>
+            </tr>
+            <tr style="background-color: rgba(0, 200, 83, 0.08);">
+                <td><strong>TP1 (1:2)</strong></td>
+                <td id="res_tp1" style="font-weight: 700; color: var(--green-market);">-</td>
+                <td>Parcial + BE</td>
+            </tr>
+            <tr>
+                <td><strong>TP2 (1:4)</strong></td>
+                <td id="res_tp2">-</td>
+                <td>Alvo Principal</td>
+            </tr>
+            <tr>
+                <td><strong>TP3 (1:6)</strong></td>
+                <td id="res_tp3">-</td>
+                <td>Tendência</td>
+            </tr>
+        </tbody>
+    </table>
 
-with col1:
-    token = st.text_input("PROCURAR TOKEN", value="SOL").upper()
-
-with col2:
-    # Mantendo o valor padrão de $5000 alinhado com a tua conta Bitfunded
-    saldo = st.number_input("SALDO BITFUNDED ($)", value=5000, step=500)
-
-# --- MÓDULO 1: TRAILING DOWN / DCA ESTRUTURAL (HOT ZONE) ---
-st.write("---")
-st.subheader("📉 Trailing Down (Hot Zone DCA)")
-st.caption("Fracionamento estratégico de entradas entre os níveis 0.5 e 0.618 de Fibonacci.")
-
-preco_entrada_topo = st.number_input("Preço de Entrada Inicial (Nível 0.5 Fib)", value=150.0, step=0.1)
-preco_entrada_fundo = st.number_input("Preço de Entrada Limite (Nível 0.618 Fib)", value=148.2, step=0.1)
-stop_loss_dca = st.number_input("Stop Loss da Operação DCA", value=146.5, step=0.1)
-
-# Cálculo do preço médio projetado assumindo distribuição institucional (30% topo / 70% fundo)
-preco_medio_dca = (preco_entrada_topo * 0.3) + (preco_entrada_fundo * 0.7)
-distancia_stop_dca = ((preco_medio_dca - stop_loss_dca) / preco_medio_dca) * 100
-
-st.markdown(f"""
-<div class='pnl-box'>
-    <b>Métricas do Trailing Down:</b><br>
-    • Preço Médio Projetado: <span style='color: #ffd700;'>${preco_medio_dca:.3f}</span><br>
-    • Distância até ao Stop: <span style='color: #ff4d4d;'>{distancia_stop_dca:.2f}%</span>
+    <div class="co-pilot-box" id="caixa_copiloto">
+        <h3>🛡️ Gestão Ativa (Top Setup)</h3>
+        <p id="txt_volman"></p>
+        <p id="txt_piramide"></p>
+    </div>
 </div>
-""", unsafe_allow_html=True)
 
-# --- MÓDULO 2: ESQUEMA PIRÂMIDE (SCALE-IN A FAVOR DA TENDÊNCIA) ---
-st.write("---")
-st.subheader("🔺 Esquema Pirâmide (Scale-In)")
-st.caption("Adiciona contratos a uma posição vencedora protegendo o Drawdown.")
+<script>
+function calcularSetup() {
+    const token = document.getElementById('token').value.toUpperCase();
+    const banca = parseFloat(document.getElementById('banca').value);
+    const entrada = parseFloat(document.getElementById('entrada').value);
+    const sl = parseFloat(document.getElementById('sl').value);
 
-posicao_atual_preco = st.number_input("Preço de Entrada da 1ª Posição", value=150.0, step=0.1)
-posicao_atual_tamanho = st.number_input("Tamanho da 1ª Posição (Contratos/Lotes)", value=10.0, step=1.0)
-preco_adicao = st.number_input("Preço para Adicionar Posição (Pirâmide)", value=153.5, step=0.1)
-tamanho_adicao = st.number_input("Tamanho da Adição (Contratos/Lotes)", value=5.0, step=1.0)
-novo_stop_geral = st.number_input("Novo Stop Loss Geral (Breakeven/Trailing)", value=151.0, step=0.1)
+    if (!token || isNaN(banca) || isNaN(entrada) || isNaN(sl) || entrada === sl) {
+        alert("Campos inválidos.");
+        return;
+    }
 
-# Cálculos Matemáticos da Pirâmide
-total_contratos = posicao_atual_tamanho + tamanho_adicao
-novo_preco_medio = ((posicao_atual_preco * posicao_atual_tamanho) + (preco_adicao * tamanho_adicao)) / total_contratos
-pnl_no_stop = (novo_stop_geral - novo_preco_medio) * total_contratos
+    const riscoPercentual = 0.0025;
+    const capitalEmRisco = banca * riscoPercentual;
+    const distAbsoluta = Math.abs(entrada - sl);
+    const direcao = entrada > sl ? "LONG" : "SHORT";
+    const loteMoedas = capitalEmRisco / distAbsoluta;
+    const loteUsd = loteMoedas * entrada;
 
-# --- MÓDULO 3: DASHBOARD DE P&L DEDICADO ---
-st.write("---")
-st.subheader("📊 Painel de P&L de Operações Específicas")
+    let tp1, tp2, tp3, gatilhoPiramide;
+    if (direcao === "LONG") {
+        tp1 = entrada + (distAbsoluta * 2);
+        tp2 = entrada + (distAbsoluta * 4);
+        tp3 = entrada + (distAbsoluta * 6);
+        gatilhoPiramide = entrada + (distAbsoluta * 1);
+    } else {
+        tp1 = entrada - (distAbsoluta * 2);
+        tp2 = entrada - (distAbsoluta * 4);
+        tp3 = entrada - (distAbsoluta * 6);
+        gatilhoPiramide = entrada - (distAbsoluta * 1);
+    }
 
-if pnl_no_stop >= 0:
-    cor_pnl = "#00ff00"
-    status_pnl = "Lucro Garantido"
-else:
-    cor_pnl = "#ff4d4d"
-    status_pnl = "Risco Atual"
+    document.getElementById('res_direcao').innerHTML = `<span class="badge-${direcao.toLowerCase()}">${direcao}</span>`;
+    document.getElementById('res_risco_usd').innerText = `Risco: $${capitalEmRisco.toFixed(2)}`;
+    document.getElementById('res_lote_moedas').innerText = `${loteMoedas.toFixed(4)} ${token}`;
+    document.getElementById('res_lote_usd').innerText = `~$${loteUsd.toFixed(2)}`;
+    document.getElementById('res_tp1').innerText = `$${tp1.toFixed(4)}`;
+    document.getElementById('res_tp2').innerText = `$${tp2.toFixed(4)}`;
+    document.getElementById('res_tp3').innerText = `$${tp3.toFixed(4)}`;
 
-st.markdown(f"""
-<div class='pnl-box'>
-    <h4>Projeção ScalpProp (Pirâmide):</h4>
-    • Novo Preço Médio Total: <b>${novo_preco_medio:.3f}</b><br>
-    • Volume Total Exposto: <b>{total_contratos} contratos</b><br>
-    • P&L Projetado no Novo Stop: <span style='color: {cor_pnl}; font-weight: bold;'>${pnl_no_stop:.2f} ({status_pnl})</span>
-</div>
-""", unsafe_allow_html=True)
+    document.getElementById('txt_volman').innerHTML = `<strong>⚠️ Tempo (Volman):</strong> Sem explosão em 4 velas? Corte 50% (<strong>${(loteMoedas * 0.5).toFixed(4)} ${token}</strong>).`;
+    document.getElementById('txt_piramide').innerHTML = `<strong>🚀 Pirâmide:</strong> Rompimento em <strong>$${gatilhoPiramide.toFixed(4)}</strong>? Adicione +20% (<strong>+${(loteMoedas * 0.2).toFixed(4)} ${token}</strong>).`;
 
-# Botão de Execução Automática (Mantido para o Stress Test)
-if st.button("EXECUTAR SCAN AUTOMÁTICO", use_container_width=True):
-    st.success(f"Scan executado com sucesso para {token} no ecossistema ScalpProp!")
+    document.getElementById('tabela_resultados').style.display = 'table';
+    document.getElementById('caixa_copiloto').style.display = 'block';
+}
+</script>
+</body>
+</html>
