@@ -1,5 +1,6 @@
 import streamlit as st
 import requests
+import time
 
 # 1. Configuração da Página e Título do Navegador
 st.set_page_config(page_title="Sniper Calc - Premium", page_icon="🎯", layout="centered")
@@ -141,13 +142,22 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 def obter_preco_binance(token):
-    url = f"https://api.binance.com/api/v3/ticker/price?symbol={token}USDT"
-    try:
-        res = requests.get(url, timeout=3)
-        if res.status_code == 200:
-            return float(res.json()['price'])
-    except:
-        return None
+    # Lista de endpoints da Binance para contornar bloqueios de IP da Cloud
+    urls = [
+        f"https://api.binance.com/api/v3/ticker/price?symbol={token}USDT",
+        f"https://api1.binance.com/api/v3/ticker/price?symbol={token}USDT",
+        f"https://api3.binance.com/api/v3/ticker/price?symbol={token}USDT"
+    ]
+    
+    for url in urls:
+        for tentativa in range(3):  # Tenta até 3 vezes em cada URL
+            try:
+                res = requests.get(url, timeout=4)
+                if res.status_code == 200:
+                    return float(res.json()['price'])
+            except:
+                time.sleep(0.5)  # Pequena pausa antes de tentar novamente
+    return None
 
 # 3. Estrutura da Interface Visual
 st.markdown("<h1>🎯 Sniper Calc &bull; Premium</h1>", unsafe_allow_html=True)
@@ -213,7 +223,7 @@ if calcular and token:
                     <tr style="color: #00c853; font-weight: bold;">
                         <td><strong>LOTE SUGERIDO</strong></td>
                         <td style="font-size: 16px;">{lote_moedas:.4f} {token}</td>
-                        <td>Noional: ~${lote_usd:.2f}</td>
+                        <td>Notional: ~${lote_usd:.2f}</td>
                     </tr>
                     <tr class="tp-row">
                         <td><strong>Take Profit 1 (1:2 RR)</strong></td>
@@ -240,5 +250,5 @@ if calcular and token:
             </div>
         """, unsafe_allow_html=True)
     else:
-        st.error(f"Não foi possível rastrear o par {token}USDT. Verifica se o nome está correto.")
-      
+        st.error(f"A API da Binance rejeitou a ligação temporariamente. Por favor, clica novamente no botão de Scan.")
+        
